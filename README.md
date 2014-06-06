@@ -6,7 +6,7 @@ Phase Shift refers to changing the phase of Project Yello being a desktop app to
 
 
 <p align="center">
-  <img src="https://projectyello.appspot.com/images/py.png" alt="Project Yello: Phase Shift">
+  <img src="https://raw.githubusercontent.com/yashrajsingh/ProjectYello-PhaseShift/master/images/py.png" alt="Project Yello: Phase Shift">
 </p>
 
 <p align="center">
