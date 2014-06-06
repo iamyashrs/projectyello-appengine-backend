@@ -1,0 +1,48 @@
+application: projectyello
+version: use-version-arg
+runtime: python27
+api_version: 1
+threadsafe: true
+
+default_expiration: "365d"
+
+builtins:
+- remote_api: on
+
+handlers:
+- url: /favi\.ico
+  static_files: favi.ico
+  upload: favi\.ico
+
+- url: /(robots\.txt)
+  static_files: static/\1
+  upload: static/robots\.txt
+
+- url: /(images|css|js|fonts|files|fancybox)/(.*)
+  static_files: \1/\2
+  upload: (images|css|js|fonts|fancybox)/(.*)
+
+- url: /.*
+  script: main.application
+  secure: always
+
+libraries:
+- name: webapp2
+  version: latest
+- name: jinja2
+  version: latest
+
+skip_files:
+- ^(.*/)?#.*#
+- ^(.*/)?.*~
+- ^(.*/)?.*sh
+- ^(.*/)?.*\.py[co]
+- ^(.*/)?.*/RCS/.*
+- ^(.*/)?\..*
+- ^(.*/)?.*\.bak$
+- ^(.*/)?.*\.template$
+- tmp
+- tests
+
+inbound_services:
+- mail

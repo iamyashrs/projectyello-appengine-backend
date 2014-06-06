@@ -1,0 +1,216 @@
+{% extends "templates/layout.html" %}
+{% block body %}
+
+<div class="container-fluid">
+    <div class="row">
+    <div class="col-md-2">
+     <div class="sidebar fixable_fixed">
+        <div class="title">
+        </div>
+
+        <div class="login">
+          {{ greeting|safe }} <br/>
+        </div>
+
+        <div class="menu">
+            <ul>
+                <a href="/"><li><span class="red">#</span>home</li></a>
+                <a href="/top"><li><span class="red">#</span>top</li></a>
+                <a href="/search"><li><span class="red">#</span>search</li></a>
+                <a href="/submit"><li><span class="red">#</span>submit</li></a>
+            </ul>
+        </div>
+     </div>
+    </div>
+
+    <div class="col-md-6 largebar">
+
+        <h1>#popular</h1>
+
+        <div class="loginwarning">
+            <p class="alert-danger" style="padding: 15px;">You have to be <b>logged in</b> to vote. </p>
+        </div>
+
+        {% if loggedin %}
+        <a class="write1" onclick="$('.post').toggle();$('.image-post').toggle(false);">
+            <span class="glyphicon glyphicon-pencil" style="margin-bottom:10px;left: 2px;"></span>
+        </a>
+        <a class="write" onclick="$('.image-post').toggle();$('.post').toggle(false);">
+            <span class="glyphicon glyphicon-picture" style="margin-bottom:10px;"></span>
+        </a>
+        <div class="post hideMe">
+              <form action="/" method="post" class="form-horizontal" role="form" enctype="multipart/form-data">
+                <div style="margin-bottom:10px;">
+                    <div class="form-group">
+                      <label class="col-md-2 control-label">title:</label>
+                      <div class="col-md-10">
+                          <input name="title" class="form-control" type="text" placeholder="title" required>
+                      </div>
+                    </div>
+                </div>
+                <div style="margin-bottom:10px;">
+                    <div class="form-group">
+                      <label class="col-md-2 control-label">text:</label>
+                      <div class="col-md-10">
+                          <textarea name="quote" class="form-control input-block-level" rows="3" placeholder="text"></textarea>
+                      </div>
+                    </div>
+                </div>
+                <div style="margin-bottom:10px;">
+                    <div class="form-group">
+                      <label class="col-md-2 control-label">url:</label>
+                      <div class="col-md-10">
+                          <input name="url" class="form-control" type="text" placeholder="url">
+                      </div>
+                    </div>
+                </div>
+                <div style="text-align: right"><input type="submit" class="btn btn-large btn-primary" value="post"></div>
+              </form>
+        </div>
+        <div class="image-post hideMe">
+              <form action="{{ upload_url }}" method="post" class="form-horizontal" role="form" enctype="multipart/form-data">
+
+                <div style="margin-bottom:10px;">
+                    <div class="form-group">
+                      <label class="col-md-2 control-label">title:</label>
+                      <div class="col-md-10">
+                        <input name="title" class="form-control" type="text" placeholder="title" required>
+                      </div>
+                    </div>
+                </div>
+
+              <div style="margin-bottom:10px;">
+                    <div class="form-group">
+                      <label class="col-md-2 control-label">image:</label>
+                      <div class="col-md-10">
+                          <div id="holder">
+                              <input type="file" accept="image/*" id="files" name="image" class="logo-input" onchange="onFileSelected(event)"/>
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                <div style="text-align: right"><input type="submit" class="btn btn-large btn-primary" value="post" align="right"></div>
+              </form>
+                <script type="text/javascript">
+                function onFileSelected(event) {
+                  var selectedFile = event.target.files[0];
+                  var reader = new FileReader();
+
+                  var input = document.getElementById("holder");
+
+                  reader.onload = function(event) {
+                    input.style.backgroundImage ="url('" + event.target.result + "')";
+                    input.style.backgroundSize = "cover";
+                  };
+
+                  reader.readAsDataURL(selectedFile);
+                }
+                </script>
+        </div>
+        {% endif %}
+
+
+        <table class="tidbits table">
+          {% for quote in quotes %}
+          <tr class="tidbit id">
+
+            <td class="index"><a href="/post/{{ quote.id }}"><span class="quoteid">{{ quote.id }}</span>{{ quote.index }}.</a></td>
+
+            <td class="vote">
+                {% if quote.voted==1 %}
+                  <img src="/images/up-clicked.png" class="voteup" data-toggle="tooltip" title="voted"/>
+                {% else %}
+                  <img src="/images/up.png" class="voteup" data-toggle="tooltip" title="upvote"/>
+                {% endif %}
+            </td>
+
+            <td class="quote">
+                {% if quote.image %}
+                    <a href="{{ images(quote.image, 0) }}"><img src="{{ images(quote.image , 70) }}" class="thumbnail"/></a>
+                {% endif %}
+                {% if quote.uri %}
+                  <a href="{{ quote.uri|escape }}" class="{{ quote.id|escape }}"  target="_blank" style="font-weight: bold;font-size:16px;">{{ quote.title }}</a><br>
+                {% else %}
+                  <a href="/post/{{ quote.id }}"><span class="{{ quote.id }}" style="font-weight: bold;font-size:16px;color:#2E7C8B;">{{ quote.title|safe }}</span></a> <br>
+                {% endif %}
+                <div class="meta">
+                    {{ quote.votesum }} votes | posted by {{ quote.creator }} {{ quote.made_on|timesince }} | {% if quote.comments==0 %} <a href="/post/{{quote.id}}">discuss</a>{% else %} <a href="/post/{{quote.id}}">{{quote.comments}} comments</a> {% endif %}
+                </div>
+            </td>
+
+            {% if quote.creator==loggedin %}
+            <td class="del">
+                <form action="/post/{{ quote.id }}" method="post">
+                 <input type="hidden" name="_method" value="delete" />
+                 <button type="submit" class="btn btn-xs btn-danger">Delete</button>
+                </form>
+            </td>
+            {% endif %}
+
+          </tr>
+          {% endfor %}
+        </table>
+        <p class="next">
+        {% if prevuri %}
+          <a href="{{ prevuri }}">Previous</a>
+        {% endif %}
+
+
+        {% if nexturi %}
+          <a href="{{ nexturi }}">Next</a>
+        {% endif %}
+        </p>
+
+    </div>
+
+    <div class="col-md-4 newbar">
+        <h1>#recent</h1>
+
+        <table class="tidbits table" style="font-size:11px;">
+          {% for quote in quotesr %}
+          <tr class="tidbit id">
+
+            <td class="index"><a href="/post/{{ quote.id }}"><span class="quoteid">{{ quote.id }}</span>{{ quote.index }}.</a></td>
+
+            <td class="vote">
+                {% if quote.voted==1 %}
+                  <img src="/images/up-clicked.png" class="voteup" data-toggle="tooltip" title="voted."/>
+                {% else %}
+                  <img src="/images/up.png" class="voteup" data-toggle="tooltip" title="Upvote!"/>
+                {% endif %}
+            </td>
+
+            <td class="quote">
+                {% if quote.uri %}
+                  <a href="{{ quote.uri|escape }}" class="{{ quote.id|escape }}" target="_blank">{{ quote.title }}</a><br>
+                {% else %}
+                  <a href="/post/{{ quote.id }}"><span class="{{ quote.id }}" style="color:#2E7C8B;">{{ quote.title|safe }}</span></a> <br>
+                {% endif %}
+                <div class="meta">
+                    {{ quote.votesum }} votes | posted by {{ quote.creator }} {{ quote.made_on|timesince }} | {% if quote.comments==0 %} <a href="/post/{{quote.id}}">discuss</a>{% else %} <a href="/post/{{quote.id}}">{{quote.comments}} comments</a> {% endif %}
+                </div>
+            </td>
+
+            <td class="image">
+                {% if quote.image %}
+                    <a href="{{ images(quote.image, 0) }}"><img src="{{ images(quote.image , 35) }}" class="thumbnail" style="padding:0;"/></a>
+                {% endif %}
+            </td>
+
+            {% if quote.creator==loggedin %}
+            <td class="del">
+                <form action="/post/{{ quote.id }}" method="post">
+                 <input type="hidden" name="_method" value="delete" />
+                 <button type="submit" class="btn btn-xs btn-danger">Delete</button>
+                </form>
+            </td>
+            {% endif %}
+
+          </tr>
+          {% endfor %}
+        </table>
+    </div>
+</div>
+</div>
+
+{% endblock %}

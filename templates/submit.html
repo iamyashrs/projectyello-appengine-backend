@@ -1,0 +1,48 @@
+{% extends "templates/layout.html" %}
+{% block body %}
+
+<div class="row anti">
+    <div class="col-md-2">
+     <div class="sidebar fixable_fixed">
+
+        <div class="title">
+        </div>
+
+        <div class="login">
+          {{ greeting|safe }} <br/>
+        </div>
+
+        <div class="menu">
+            <ul>
+                <a href="/"><li><span class="red">#</span>home</li></a>
+                <a href="/top"><li><span class="red">#</span>top</li></a>
+                <a href="/search"><li><span class="red">#</span>search</li></a>
+                <a href="/submit"><li><span class="red">#</span>submit</li></a>
+            </ul>
+        </div>
+    </div>
+    </div>
+
+    <div class="col-md-10 largebar">
+
+        <h1 style="width: 175px;display: inline-block;">#submit</h1>
+        {% if loggedin %}
+        <p class="text-muted">Leave url blank to submit a question for discussion. If there is no url, the text (if any) will appear at the top of the comments page. If there is a url, the text will be ignored.</p>
+
+        <div class="submit" style="max-width:650px; background:none;margin-left:0;padding-left:0;">
+              <form action="/" method="post">
+                <div style="margin-bottom:5px;"><input name="title" class="form-control input-sm" required type="text" placeholder="title" required></div>
+                <div style="margin-bottom:5px;"><textarea name="quote" class="form-control input-block-level" placeholder="text" rows="5"></textarea></div>
+                <div style="margin-bottom:5px;"><input name="url" class="form-control input-sm" type="text" placeholder="url"></div>
+                <div style="margin-bottom:5px;float:right;"><input type="file" name="image" class="logo-input"/></div>
+                <div><input type="submit" class="btn btn-large btn-primary" value="post"></div>
+              </form>
+        </div>
+        {% else %}
+            <p class="bg-danger" style="padding:15px;">You must <b>login</b> before you can post.</p>
+        {% endif %}
+
+    </div>
+</div>
+
+{% endblock %}

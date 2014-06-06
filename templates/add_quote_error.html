@@ -1,0 +1,44 @@
+{% extends "templates/layout.html" %}
+{% block body %}
+
+<div class="row anti">
+    <div class="col-md-2 sidebar">
+
+        <div class="title">
+        </div>
+
+        <div class="login">
+          {{ greeting|safe }} <br/>
+        </div>
+
+        <div class="menu">
+            <ul>
+                <a href="/"><li><span class="red">#</span>home</li></a>
+                <a href="/top"><li><span class="red">#</span>top</li></a>
+                <a href="/search"><li><span class="red">#</span>search</li></a>
+                <a href="/submit"><li><span class="red">#</span>submit</li></a>
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-md-10 largebar">
+
+        <div class="titlebar" >
+        <span class="login" >{{ greeting }}</span>
+        </div>
+
+        {% if loggedin %}
+        <div class="submit_tidbit" style="max-width: 400px;">
+            <p class="bg-primary" style="padding:15px;">{{ error_msg }}.</p>
+          <form action="/" method="post">
+            <div style="margin-bottom:5px;"><input name="title" class="form-control input-sm" type="text" value="{{title}}" placeholder="Title"></div>
+            <div style="margin-bottom:5px;"><textarea name="quote" class="form-control input-block-level" rows="3">{{ text }}</textarea></div>
+            <div style="margin-bottom:5px;"><input name="url" value="{{ uri }}" class="form-control input-sm" type="text" placeholder="URL"></div>
+            <div><input type="submit" class="btn btn-large btn-primary" value="Post"></div>
+          </form>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
