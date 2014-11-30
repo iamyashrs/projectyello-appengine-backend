@@ -3,6 +3,7 @@ import os
 import webapp2
 import cgi
 import modals
+import json
 import wsgiref.handlers
 from datetime import datetime
 from urlparse import parse_qs
@@ -10,6 +11,7 @@ from urlparse import urlparse
 
 from google.appengine.api import users
 from google.appengine.ext import blobstore
+from google.appengine.ext import db,ndb
 from google.appengine.ext.webapp import blobstore_handlers
 from google.appengine.api import images
 
@@ -419,6 +421,50 @@ class CommentDeleterHandler(webapp2.RequestHandler):
         modals.del_comment(quoteid, commentid, user)
         self.redirect('/post/' + quoteid)
 
+class RecentHandlerAPI(webapp2.RequestHandler):
+    def get(self):
+        limit = int(self.request.get('limit', '20'))
+        quotes = modals.get_recent(limit)
+            
+        self.response.headers['Content-Type'] = 'application/json'   
+        items = []
+        for i in quotes:
+            items.append(i.to_dict())
+        
+        self.response.out.write(json.dumps(items,
+                indent=4, separators=(',', ': '),))
+
+        
+
+class PopularHandlerAPI(webapp2.RequestHandler):
+    def get(self):
+        limit = int(self.request.get('limit', '20'))
+        quotes = modals.get_popular(limit)
+            
+        self.response.headers['Content-Type'] = 'application/json'   
+        items = []
+        for i in quotes:
+            items.append(i.to_dict())
+
+        self.response.out.write(json.dumps(items,
+                indent=4, separators=(',', ': '),))
+
+class TopHandlerAPI(webapp2.RequestHandler):
+    def get(self):
+        limit = int(self.request.get('limit', '20'))
+        quotes = modals.get_top(limit)
+            
+        self.response.headers['Content-Type'] = 'application/json'   
+        items = []
+        for i in quotes:
+            items.append(i.to_dict())
+
+        self.response.out.write(json.dumps(items,
+                indent=4, separators=(',', ': '),))
+
+class SearchHandlerAPI(webapp2.RequestHandler):
+    def get(self,query):
+        pass
 
 application = webapp2.WSGIApplication(
     [
@@ -432,6 +478,10 @@ application = webapp2.WSGIApplication(
         ('/del_comment/(.*)', CommentDeleterHandler),
         ('/search', SearchHandler),
         ('/feed/(recent|popular)/', FeedHandler),
+        ('/api/recent', RecentHandlerAPI),
+        ('/api/popular', PopularHandlerAPI),
+        ('/api/top', TopHandlerAPI),
+        ('/api/search/(.*)', SearchHandlerAPI),
     ], debug=True)
 
 
