@@ -245,6 +245,25 @@ def get_top(limit=20):
     quotes = Post.gql('ORDER BY votesum DESC').fetch(limit)
     return quotes
 
+def get_search(query, limit=20):
+    assert limit > 0
+
+    expr_list = [search.SortExpression(
+        expression='author', default_value='',
+        direction=search.SortExpression.DESCENDING)]
+
+    sort_opts = search.SortOptions(expressions=expr_list)
+    query_options = search.QueryOptions(limit=limit, sort_options=sort_opts)
+    query_obj = search.Query(query_string=query, options=query_options)
+
+    results_posts = search.Index(name=_INDEX_SEARCH).search(query=query_obj)
+    results = []
+    for result in results_posts:
+        a = Post.get_by_id(long(result.doc_id))
+        results.append(a)
+
+    return results
+
 
 def get_quotes_top(page=0):
     assert page >= 0
