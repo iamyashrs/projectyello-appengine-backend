@@ -3,7 +3,7 @@ import logging
 import hashlib
 
 from google.appengine.ext import db, ndb
-from google.appengine.api import memcache
+from google.appengine.api import memcache, images
 from google.appengine.api import users
 from google.appengine.api import search
 from google.appengine.ext import blobstore
@@ -21,7 +21,7 @@ class Post(ndb.Model):
         items['id']=self.key.id()
         items['title']=self.title
         items['quote']=self.quote
-        items['image']=self.image
+        items['image']=images.get_serving_url(self.image)
         items['creator']=self.creator.email()
         items['created']=self.made_on.isoformat()
         # items['created']=self.made_on.strftime('%Y-%m-%dT%H:%M:%S')
