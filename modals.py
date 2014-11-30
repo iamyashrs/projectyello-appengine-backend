@@ -21,7 +21,10 @@ class Post(ndb.Model):
         items['id']=self.key.id()
         items['title']=self.title
         items['quote']=self.quote
-        items['image']=images.get_serving_url(self.image)
+        try:
+            items['image']=images.get_serving_url(self.image)
+        except:
+            pass
         items['creator']=self.creator.email()
         items['created']=self.made_on.isoformat()
         # items['created']=self.made_on.strftime('%Y-%m-%dT%H:%M:%S')
