@@ -16,6 +16,19 @@ _INDEX_SEARCH = 'search'
 
 
 class Post(ndb.Model):
+    def to_dict(self):
+        items = {}
+        items['id']=self.key.id()
+        items['title']=self.title
+        items['quote']=self.quote
+        items['image']=self.image
+        items['creator']=self.creator.email()
+        items['created']=self.made_on.isoformat()
+        # items['created']=self.made_on.strftime('%Y-%m-%dT%H:%M:%S')
+        items['url']=self.uri
+        items['votesum']=self.votesum
+        items['comments']=self.comments
+        return items
     title = ndb.StringProperty(required=True)
     quote = ndb.StringProperty()
     uri = ndb.StringProperty()
@@ -216,6 +229,11 @@ def get_quotes(page=0):
             extra = quotes[-1]
         quotes = quotes[:PAGE_SIZE]
     return quotes, extra
+
+def get_recent(limit=20):
+    assert limit > 0
+    quotes = Post.gql('ORDER BY creation_order DESC').fetch(limit)
+    return quotes
 
 
 def get_quotes_top(page=0):

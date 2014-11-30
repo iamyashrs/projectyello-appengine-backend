@@ -3,6 +3,7 @@ import os
 import webapp2
 import cgi
 import modals
+import json
 import wsgiref.handlers
 from datetime import datetime
 from urlparse import parse_qs
@@ -10,6 +11,7 @@ from urlparse import urlparse
 
 from google.appengine.api import users
 from google.appengine.ext import blobstore
+from google.appengine.ext import db,ndb
 from google.appengine.ext.webapp import blobstore_handlers
 from google.appengine.api import images
 
@@ -419,6 +421,63 @@ class CommentDeleterHandler(webapp2.RequestHandler):
         modals.del_comment(quoteid, commentid, user)
         self.redirect('/post/' + quoteid)
 
+class RecentHandlerAPI(webapp2.RequestHandler):
+    def get(self):
+        limit = int(self.request.get('limit', '20'))
+        quotes = modals.get_recent(limit)
+        
+        # template_values = create_template_dict_main(
+        #     user, quotes, 'Popular', quotesr, 'Recent', nexturi, prevuri, pager, nexturir, None
+        # )
+
+        self.response.headers['Content-Type'] = 'application/json'   
+        items = []
+        for i in quotes:
+            print items.append(i.to_dict())
+            print
+        #     print i
+        #     print i.key, i.comments
+        #     print           
+
+        
+        self.response.out.write(json.dumps(items,
+                indent=4, separators=(',', ': '),))
+
+        
+
+class PopularHandlerAPI(webapp2.RequestHandler):
+    def get(self):
+        user = users.get_current_user()
+        page = int(self.request.get('p', '0'))
+        quotes, next = modals.get_quotes(page)
+        if next:
+            nexturi = '/?p=%d' % (page + 1)
+        else:
+            nexturi = None
+        if page > 1:
+            prevuri = '/?p=%d' % (page - 1)
+        elif page == 1:
+            prevuri = '/'
+        else:
+            prevuri = None
+
+        offset = self.request.get('offset')
+        pager = int(self.request.get('p', '0'))
+        if not offset:
+            offset = None
+        quotesr, nextr = modals.get_quotes_newest(offset)
+        if nextr:
+            nexturir = '?offset=%s&p=%d' % (next, page + 1)
+        else:
+            nexturir = None
+
+        template_values = create_template_dict_main(
+            user, quotes, 'Popular', quotesr, 'Recent', nexturi, prevuri, pager, nexturir, None
+        )
+
+        template = jinja_environment.get_template('templates/index.html')
+        self.response.out.write(template.render(template_values))
+
 
 application = webapp2.WSGIApplication(
     [
@@ -432,6 +491,8 @@ application = webapp2.WSGIApplication(
         ('/del_comment/(.*)', CommentDeleterHandler),
         ('/search', SearchHandler),
         ('/feed/(recent|popular)/', FeedHandler),
+        ('/api/recent', RecentHandlerAPI),
+        ('/api/popular', PopularHandlerAPI),
     ], debug=True)
 
 
