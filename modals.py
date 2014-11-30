@@ -235,6 +235,11 @@ def get_recent(limit=20):
     quotes = Post.gql('ORDER BY creation_order DESC').fetch(limit)
     return quotes
 
+def get_popular(limit=20):
+    assert limit > 0
+    quotes = Post.gql('ORDER BY rank DESC').fetch(limit)
+    return quotes
+
 
 def get_quotes_top(page=0):
     assert page >= 0
