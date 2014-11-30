@@ -449,6 +449,22 @@ class PopularHandlerAPI(webapp2.RequestHandler):
         self.response.out.write(json.dumps(items,
                 indent=4, separators=(',', ': '),))
 
+class TopHandlerAPI(webapp2.RequestHandler):
+    def get(self):
+        limit = int(self.request.get('limit', '20'))
+        quotes = modals.get_top(limit)
+            
+        self.response.headers['Content-Type'] = 'application/json'   
+        items = []
+        for i in quotes:
+            items.append(i.to_dict())
+
+        self.response.out.write(json.dumps(items,
+                indent=4, separators=(',', ': '),))
+
+class SearchHandlerAPI(webapp2.RequestHandler):
+    def get(self,query):
+        pass
 
 application = webapp2.WSGIApplication(
     [
@@ -464,6 +480,8 @@ application = webapp2.WSGIApplication(
         ('/feed/(recent|popular)/', FeedHandler),
         ('/api/recent', RecentHandlerAPI),
         ('/api/popular', PopularHandlerAPI),
+        ('/api/top', TopHandlerAPI),
+        ('/api/search/(.*)', SearchHandlerAPI),
     ], debug=True)
 
 

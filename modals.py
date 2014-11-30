@@ -240,6 +240,11 @@ def get_popular(limit=20):
     quotes = Post.gql('ORDER BY rank DESC').fetch(limit)
     return quotes
 
+def get_top(limit=20):
+    assert limit > 0
+    quotes = Post.gql('ORDER BY votesum DESC').fetch(limit)
+    return quotes
+
 
 def get_quotes_top(page=0):
     assert page >= 0
