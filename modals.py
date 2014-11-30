@@ -3,7 +3,7 @@ import logging
 import hashlib
 
 from google.appengine.ext import db, ndb
-from google.appengine.api import memcache
+from google.appengine.api import memcache, images
 from google.appengine.api import users
 from google.appengine.api import search
 from google.appengine.ext import blobstore
@@ -16,6 +16,22 @@ _INDEX_SEARCH = 'search'
 
 
 class Post(ndb.Model):
+    def to_dict(self):
+        items = {}
+        items['id']=self.key.id()
+        items['title']=self.title
+        items['quote']=self.quote
+        try:
+            items['image']=images.get_serving_url(self.image)
+        except:
+            pass
+        items['creator']=self.creator.email()
+        items['created']=self.made_on.isoformat()
+        # items['created']=self.made_on.strftime('%Y-%m-%dT%H:%M:%S')
+        items['url']=self.uri
+        items['votesum']=self.votesum
+        items['comments']=self.comments
+        return items
     title = ndb.StringProperty(required=True)
     quote = ndb.StringProperty()
     uri = ndb.StringProperty()
@@ -216,6 +232,40 @@ def get_quotes(page=0):
             extra = quotes[-1]
         quotes = quotes[:PAGE_SIZE]
     return quotes, extra
+
+def get_recent(limit=20):
+    assert limit > 0
+    quotes = Post.gql('ORDER BY creation_order DESC').fetch(limit)
+    return quotes
+
+def get_popular(limit=20):
+    assert limit > 0
+    quotes = Post.gql('ORDER BY rank DESC').fetch(limit)
+    return quotes
+
+def get_top(limit=20):
+    assert limit > 0
+    quotes = Post.gql('ORDER BY votesum DESC').fetch(limit)
+    return quotes
+
+def get_search(query, limit=20):
+    assert limit > 0
+
+    expr_list = [search.SortExpression(
+        expression='author', default_value='',
+        direction=search.SortExpression.DESCENDING)]
+
+    sort_opts = search.SortOptions(expressions=expr_list)
+    query_options = search.QueryOptions(limit=limit, sort_options=sort_opts)
+    query_obj = search.Query(query_string=query, options=query_options)
+
+    results_posts = search.Index(name=_INDEX_SEARCH).search(query=query_obj)
+    results = []
+    for result in results_posts:
+        a = Post.get_by_id(long(result.doc_id))
+        results.append(a)
+
+    return results
 
 
 def get_quotes_top(page=0):
