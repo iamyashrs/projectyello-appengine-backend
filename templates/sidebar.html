@@ -1,0 +1,28 @@
+<div class="col-md-2">
+     <div class="sidebar fixable_fixed">
+        <div class="title">
+        </div>
+
+        <div class="login">
+            {% if logged_in %}
+                <p>Holla! {{ user.name }}</p>
+                <a href="/logout" class="loggedin">logout</a>
+                {% else %}
+                <p>Try logging in with one of these:</p>
+                <p>
+                  <a href="/auth/googleplus?destination_url={{ destination_url }}" class="btn">Google+</a>
+                  <a href="/auth/facebook?destination_url={{ destination_url }}" class="btn">Facebook</a>
+                </p>
+            {% endif %}
+        </div>
+
+        <div class="menu">
+            <ul>
+                <a href="/"><li><span class="red">#</span>home</li></a>
+                <a href="/top"><li><span class="red">#</span>top</li></a>
+                <a href="/search"><li><span class="red">#</span>search</li></a>
+                <a href="/submit"><li><span class="red">#</span>submit</li></a>
+            </ul>
+        </div>
+    </div>
+</div>

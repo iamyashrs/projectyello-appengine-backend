@@ -1,0 +1,46 @@
+<table class="tidbits table" style="font-size:11px;">
+  {% for quote in quotes %}
+  <tr class="tidbit id">
+
+    <td class="index"><a href="/post/{{ quote.id }}"><span class="quoteid">{{ quote.id }}</span>{{ quote.index }}.</a></td>
+
+    <td class="vote">
+        {% if quote.voted==1 %}
+          <img src="/images/up-clicked.png" class="voteup" data-toggle="tooltip" title="voted."/>
+        {% else %}
+          <img src="/images/up.png" class="voteup" data-toggle="tooltip" title="Upvote!"/>
+        {% endif %}
+    </td>
+
+    <td class="quote">
+        {% if quote.uri %}
+          <a href="{{ quote.uri|escape }}" class="{{ quote.id|escape }}" target="_blank">{{ quote.title }}</a><br>
+        {% else %}
+          <a href="/post/{{ quote.id }}"><span class="{{ quote.id }}" style="color:#2E7C8B;">{{ quote.title|safe }}</span></a> <br>
+        {% endif %}
+        <div class="meta">
+            <span class="votes">{{ quote.votesum }}</span> votes | posted by {% if quote.creator_anonymous == true %}Anonymous{% else %}{{ quote.creator.get().email|nickname }}{% endif %} | {{ quote.made_on|timesince }}<br/>{% if quote.comments==0 %} <a href="/post/{{quote.id}}">discuss</a>{% else %} <a href="/post/{{quote.id}}">{{quote.comments}} comments</a> {% endif %}
+        </div>
+    </td>
+
+    <td class="image">
+        {% if quote.image %}
+            <a href="{{ images(quote.image, 0) }}"><img src="{{ images(quote.image , 35) }}" class="thumbnail" style="padding:0;"/></a>
+        {% endif %}
+    </td>
+
+
+    {% if logged_in %}
+        {% if quote.creator==user.key %}
+            <td class="del">
+                <form action="/post/{{ quote.id }}" method="post">
+                 <input type="hidden" name="_method" value="delete" />
+                 <button type="submit" class="btn btn-xs btn-danger">Delete</button>
+                </form>
+            </td>
+        {% endif %}
+    {% endif %}
+
+  </tr>
+  {% endfor %}
+</table>

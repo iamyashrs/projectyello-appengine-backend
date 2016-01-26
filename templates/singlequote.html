@@ -1,66 +1,13 @@
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>Project Yello - Post</title>
-        <link href='http://projectyello.appspot.com/' rel='canonical'/>
-        <link href="https://google.com/+YashRajSingh" rel="publisher"/>
-        <!-- Mega-Maximum Meta Tags For SEO -->
-        <meta content='global' name='distribution'/>
-        <meta content='7 days' name='revisit'/>
-        <meta content='7 days' name='revisit-after'/>
-        <meta content='documents' name='resource-type'/>
-        <meta content='all' name='audience'/>
-        <meta content='general' name='rating'/>
-        <meta content='all' name='robots'/>
-        <meta content='index, follow' name='robots'/>
-        <meta content='Yash Raj Singh' name='author'/>
-        <meta content='http://projectyello.appspot.com/' property='og:url'/>
-        <meta content='Project Yello' property='og:site_name'/>
-        <meta content='en' name='language'/>
-        <meta content='IN' name='country'/>
-        <meta content='28.35,79.4167' name='ICBM'/>
-        <meta content='Project Yello' name='DC.title'/>
-        <meta content='0;115' name='geo.position'/>
-        <meta content='IN' name='geo.region'/>
-        <meta content='India' name='geo.placename'/>
-        <meta content='Copyright 2013-2014 by Yash Raj Singh and Jaypee University of Engineering and Technology, Guna. All Rights Reserved.' name='copyright'/>
-        <meta content='projectyello, projects, project yello, juet, juet guna, guna, jaypee, webapp, jiit, juit, jiet, noida, jaypee university' name='keywords'/>
-        <meta content='The web app for Jaypee University of engineering and Technology, Guna you&#39;ll love to use' name='description'/>
-        <!-- end of Mega-Maximum Meta Tags For SEO -->
-
-        <link href="/css/bootstrap.min.css" rel="stylesheet">
-        <link href="/css/base.css" rel="stylesheet">
-        <script type="text/javascript" src="/js/jquery.min.js"></script>
-</head>
-<body>
+{% extends "layout.html" %}
+{% block body %}
 
 <div class="row anti">
 
-    <div class="col-md-2">
-     <div class="sidebar fixable_fixed">
-        <div class="title">
-        </div>
-
-        <div class="login">
-          {{ greeting|safe }} <br/>
-        </div>
-
-        <div class="menu">
-            <ul>
-                <a href="/"><li><span class="red">#</span>home</li></a>
-                <a href="/top"><li><span class="red">#</span>top</li></a>
-                <a href="/search"><li><span class="red">#</span>search</li></a>
-                <a href="/submit"><li><span class="red">#</span>submit</li></a>
-            </ul>
-        </div>
-    </div>
-    </div>
+    {% include "sidebar.html" %}
 
     <div class="col-md-10 largebar">
 
-        <div class="loginwarning">
+         <div class="loginwarning">
             <p class="alert-danger" style="padding: 15px;">You have to be <b>logged in</b> to vote. </p>
         </div>
 
@@ -85,7 +32,7 @@
                   <span class="{{ quote.id }}" style="font-weight: bold;font-size:14px;color:#2E7C8B;">{{ quote.title|safe }}</span> <br>
                 {% endif %}
                 <div class="meta">
-                    {{ quote.votesum }} votes | posted by {{ quote.creator }} {{ quote.made_on|timesince }} | {{quote.comments}} comments
+                    {{ quote.votesum }} votes | posted by {% if quote.creator_anonymous == true %}Anonymous{% else %}{{ quote.creator.get().email|nickname }}{% endif %} {{ quote.made_on|timesince }} | {{quote.comments}} comments
                 </div>
                 <div class="text">
                     <blockquote><p>{{ quote.quote }}</p></blockquote>
@@ -99,7 +46,7 @@
             </td>
 
             <td class="del">
-            {% if quote.creator==loggedin %}
+            {% if quote.creator==user.key %}
                 <form action="/post/{{ quote.id }}" method="post">
                  <input type="hidden" name="_method" value="delete" />
                  <button type="submit" class="btn btn-xs btn-danger">Delete</button>
@@ -112,12 +59,11 @@
           {% endfor %}
         </table>
 
-
         {% if comments %}
       <div class="comments">
           {% for comment in comments %}
             <div class="comment">
-                {% if comment.author==loggedin %}
+                {% if comment.author==user.key %}
                     <form action="/del_comment/{{ comment.key.id() }}" method="post" class="cmt-del">
                      <input type="hidden" name="_method" value="delete" />
                      <input type="hidden" name="quoteid" value="{{ quote_id }}"/>
@@ -125,14 +71,14 @@
                     </form>
                 {% endif %}
 
-                <p class="meta">{{ comment.author }} {{ comment.made_on|timesince }} </p>
+                <p class="meta"> {% if comment.author_anonymous == true %}Anonymous{% else %}@{{ comment.author.get().email|nickname }}{% endif %} {{ comment.made_on|timesince }} </p>
                 <p>{{ comment.text }}</p>
             </div>
           {% endfor %}
       </div>
         {% endif %}
 
-      {% if loggedin %}
+      {% if logged_in %}
       <div class="add_comment">
       {% for quote in quotes %}
         <form action="/add_comment" method="post">
@@ -141,6 +87,7 @@
           </div>
           <div>
               <input type="hidden" name="quoteid" value="{{ quote.id }}" />
+              <input type="checkbox" name="anon" checked data-toggle="toggle" data-on="{{ user.email|nickname }}" data-off="Anonymous" data-width="125" data-onstyle="success" data-offstyle="warning">
               <input type="submit" class="btn btn-large btn-primary" value="comment">
           </div>
         </form>
@@ -152,8 +99,4 @@
     </div>
 </div>
 
-<script type="text/javascript" src="/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="/js/main.js"></script>
-
-</body>
-</html>
+{% endblock %}

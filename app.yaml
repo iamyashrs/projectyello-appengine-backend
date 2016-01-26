@@ -1,5 +1,5 @@
 application: projectyello
-version: use-version-arg
+version: 1
 runtime: python27
 api_version: 1
 threadsafe: true
@@ -10,6 +10,9 @@ builtins:
 - remote_api: on
 
 handlers:
+- url: /_ah/spi/.*
+  script: api.application
+
 - url: /favi\.ico
   static_files: favi.ico
   upload: favi\.ico
@@ -31,6 +34,16 @@ libraries:
   version: latest
 - name: jinja2
   version: latest
+- name: endpoints
+  version: 1.0
+- name: webob
+  version: "1.2.3"
+- name: markupsafe
+  version: "0.15"
+- name: setuptools
+  version: "0.6c11"
+- name: lxml
+  version: "2.3"
 
 skip_files:
 - ^(.*/)?#.*#

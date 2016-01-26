@@ -1,26 +1,9 @@
-{% extends "templates/layout.html" %}
+{% extends "layout.html" %}
 {% block body %}
 
 <div class="row anti">
-    <div class="col-md-2">
-     <div class="sidebar fixable_fixed">
-        <div class="title">
-        </div>
 
-        <div class="login">
-          {{ greeting|safe }} <br/>
-        </div>
-
-        <div class="menu">
-            <ul>
-                <a href="/"><li><span class="red">#</span>home</li></a>
-                <a href="/top"><li><span class="red">#</span>top</li></a>
-                <a href="/search"><li><span class="red">#</span>search</li></a>
-                <a href="/submit"><li><span class="red">#</span>submit</li></a>
-            </ul>
-        </div>
-    </div>
-    </div>
+    {% include "sidebar.html" %}
 
     <div class="col-md-10 largebar">
 
@@ -32,56 +15,7 @@
               </form>
         </form>
 
-        {% if quotes %}
-        <table class="tidbits table" style="max-width: 70%;">
-           {% for quote in quotes %}
-          <tr class="tidbit id">
-
-            <td class="index"><a href="/post/{{ quote.id }}"><span class="quoteid">{{ quote.id }}</span>{{ quote.index }}.</a></td>
-
-            <td class="vote">
-                {% if quote.voted==1 %}
-                  <img src="/images/up-clicked.png" class="voteup" data-toggle="tooltip" title="voted"/>
-                {% else %}
-                  <img src="/images/up.png" class="voteup" data-toggle="tooltip" title="upvote"/>
-                {% endif %}
-            </td>
-
-            <td class="quote">
-                {% if quote.uri %}
-                  <a href="{{ quote.uri|escape }}" class="{{ quote.id|escape }}"  target="_blank" style="font-weight: bold;font-size:14px;">{{ quote.title }}</a><br>
-                {% else %}
-                  <a href="/post/{{ quote.id }}"><span class="{{ quote.id }}" style="font-weight: bold;font-size:14px;color:#2E7C8B;">{{ quote.title|safe }}</span></a> <br>
-                {% endif %}
-                <div class="meta">
-                    {{ quote.votesum }} votes | posted by {{ quote.creator }} {{ quote.made_on|timesince }} | {% if quote.comments==0 %} <a href="/post/{{quote.id}}">discuss</a>{% else %} <a href="/post/{{quote.id}}">{{quote.comments}} comments</a> {% endif %}
-                </div>
-            </td>
-
-            <td class="image">
-                {% if quote.image %}
-                    <img src="{{ images(quote.image , 50) }}" class="picture_post"/>
-                {% endif %}
-            </td>
-
-            {% if quote.creator==loggedin %}
-            <td class="del">
-                <form action="/post/{{ quote.id }}" method="post">
-                 <input type="hidden" name="_method" value="delete" />
-                 <button type="submit" class="btn btn-xs btn-danger">Delete</button>
-                </form>
-            </td>
-            {% endif %}
-
-          </tr>
-          {% endfor %}
-        </table>
-        {% endif %}
-
-
-        <div class="loginwarning">
-            <p class="alert-danger" style="padding: 15px;">You have to be <b>logged in</b> to vote. </p>
-        </div>
+        {% include "list.html" %}
 
     </div>
 </div>

@@ -3,7 +3,7 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>Project Yello | JUET, Guna</title>
+		<title>{{ title }}</title>
         <link href='favi.ico' rel='icon' type='image/x-icon'/>
         <link href='http://projectyello.appspot.com/' rel='canonical'/>
         <link href="https://google.com/+YashRajSingh" rel="publisher"/>
@@ -38,28 +38,15 @@
         <![endif]-->
 		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 		<link rel="stylesheet" href="/css/base.css">
+        <script src="/js/jquery.min.js"></script>
+        <script src="/js/bootstrap.min.js"></script>
+        <script src="/js/main.js"></script>
+        <link href="/css/bootstrap-toggle.min.css" rel="stylesheet">
+        <script src="/js/bootstrap-toggle.min.js"></script>
 </head>
 <body>
-
 {% block body %}
 
 {% endblock %}
-
-
-<script src="/js/asyncLoader.min.js"></script>
-<script>
-    asyncLoader(
-        [
-            '//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js',
-            '//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js',
-            '/js/main.js',
-        ],
-        {
-            'callback':function() {
-                $('body').fadeIn(500);
-            }
-        }
-    );
-</script>
 </body>
 </html>

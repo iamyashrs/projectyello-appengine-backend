@@ -15,7 +15,7 @@ hr {
 
 .largebar {
     background: #FFF;
-    padding:20px;
+    padding-top:20px;
 }
 
 .newbar {
@@ -247,6 +247,7 @@ cursor: pointer;
 
 .add_comment {
     margin:10px;
+    width: auto;
 }
 
 .cmt-del {
@@ -302,3 +303,7 @@ cursor: pointer;
     font-size: 100px;
 }
 #holder:hover, #holder:active { border: 5px dashed #0c0; }
+
+.row {
+  display: flex; /* equal height of the children */
+}
