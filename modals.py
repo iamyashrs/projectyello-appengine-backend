@@ -25,7 +25,7 @@ class Post(ndb.Model):
         try:
             items['image'] = images.get_serving_url(self.image)
         except:
-            pass
+            items['image'] = "no_image"
         return items
 
     title = ndb.StringProperty(required=True)
